@@ -49,16 +49,19 @@ public class CategoriaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Teste sem sucesso
     @PutMapping("/{id}")
     public ResponseEntity<Categoria> atualizar(@PathVariable UUID id, @RequestBody Categoria categoria) {
         return ResponseEntity.ok(categoriaService.atualizar(id, categoria));
     }
+
 
     @PutMapping("/{id}/status")
     public ResponseEntity<Categoria> atualizarStatus(@PathVariable UUID id, @RequestParam boolean ativo) {
         return ResponseEntity.ok(categoriaService.atualizarStatus(id, ativo));
     }
 
+        //Teste sem sucesso
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         categoriaService.deletar(id);

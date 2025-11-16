@@ -1,8 +1,19 @@
 package com.projetoIntegrador.RaitoCorp.vendas.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "carrinhos")
@@ -20,6 +31,7 @@ public class Carrinho {
     private LocalDateTime criadoEm = LocalDateTime.now();
 
     @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ItemCarrinho> itens = new ArrayList<>();
 
     // ===== Getters e Setters =====

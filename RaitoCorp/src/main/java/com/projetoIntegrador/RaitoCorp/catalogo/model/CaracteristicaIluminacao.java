@@ -2,6 +2,8 @@ package com.projetoIntegrador.RaitoCorp.catalogo.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,34 +23,28 @@ public class CaracteristicaIluminacao {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "produto_id", nullable = false)
+    @JoinColumn(name = "id_produto", nullable = false)
+    @JsonIgnore
     private Produto produto;
 
     @Column(nullable = false)
-    private String potencia; // Ex: "20W"
+    private String potencia;
 
     @Column(nullable = false)
-    private String temperaturaCor; // Ex: "3000K"
+    private String temperaturaCor;
 
     @Column(nullable = false)
-    private String fluxoLuminoso; // Ex: "2000lm"
+    private String fluxoLuminoso;
 
-    private String tensao; // Ex: "Bivolt", "127V"
+    private String tensao;
+    private String eficiencia;
+    private String indiceProtecao;
 
-    private String eficiencia; // Ex: "90lm/W"
-
-    private String indiceProtecao; // Ex: "IP65"
-
-    // =======================
-    // Getters e Setters
-    // =======================
+    @Column(nullable = false)
+    private boolean regulavel;
 
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public Produto getProduto() {
@@ -57,6 +53,10 @@ public class CaracteristicaIluminacao {
 
     public void setProduto(Produto produto) {
         this.produto = produto;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getPotencia() {
@@ -105,5 +105,13 @@ public class CaracteristicaIluminacao {
 
     public void setIndiceProtecao(String indiceProtecao) {
         this.indiceProtecao = indiceProtecao;
+    }
+
+    public boolean isRegulavel() {
+        return regulavel;
+    }
+
+    public void setRegulavel(boolean regulavel) {
+        this.regulavel = regulavel;
     }
 }
