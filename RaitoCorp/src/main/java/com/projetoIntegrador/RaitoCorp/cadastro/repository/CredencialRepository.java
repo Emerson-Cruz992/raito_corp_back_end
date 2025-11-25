@@ -11,4 +11,5 @@ import com.projetoIntegrador.RaitoCorp.cadastro.model.Credencial;
 @Repository
 public interface CredencialRepository extends JpaRepository<Credencial, UUID> {
     Optional<Credencial> findByEmail(String email);
+    Optional<Credencial> findByIdUsuario(UUID idUsuario);
 }

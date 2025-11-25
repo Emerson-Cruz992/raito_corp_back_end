@@ -44,6 +44,34 @@ public class CredencialService {
             return false;
         }
     }
+
+    public Optional<Credencial> autenticarERetornar(String email, String senha) {
+        Optional<Credencial> credencialOpt = credencialRepo.findByEmail(email);
+        if (credencialOpt.isEmpty()) return Optional.empty();
+
+        Credencial credencial = credencialOpt.get();
+        boolean senhaOk = encoder.matches(senha, credencial.getSenhaHash());
+
+        if (senhaOk) {
+            credencial.setUltimoLogin(LocalDateTime.now());
+            credencial.setTentativasLogin(0);
+            credencialRepo.save(credencial);
+            return Optional.of(credencial);
+        } else {
+            credencial.setTentativasLogin(credencial.getTentativasLogin() + 1);
+            credencialRepo.save(credencial);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Credencial> buscarPorEmail(String email) {
+        return credencialRepo.findByEmail(email);
+    }
+
+    public Optional<Credencial> buscarPorIdUsuario(java.util.UUID idUsuario) {
+        return credencialRepo.findByIdUsuario(idUsuario);
+    }
+
     public List<Credencial> listarcCredenciais() {
         return credencialRepo.findAll();
     }
