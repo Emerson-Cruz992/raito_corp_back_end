@@ -14,6 +14,7 @@ import com.projetoIntegrador.RaitoCorp.cadastro.service.CredencialService;
 import com.projetoIntegrador.RaitoCorp.catalogo.dto.ProdutoAdminDTO;
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 import com.projetoIntegrador.RaitoCorp.catalogo.repository.ProdutoRepository;
+import com.projetoIntegrador.RaitoCorp.catalogo.service.ProdutoService;
 import com.projetoIntegrador.RaitoCorp.estoque.model.Estoque;
 import com.projetoIntegrador.RaitoCorp.estoque.repository.EstoqueRepository;
 import com.projetoIntegrador.RaitoCorp.vendas.dto.PedidoAdminDTO;
@@ -43,6 +44,9 @@ public class AdminService {
     @Autowired
     private CredencialService credencialService;
 
+    @Autowired
+    private ProdutoService produtoService;
+
     public List<ProdutoAdminDTO> listarProdutosComMetricas() {
         List<Produto> produtos = produtoRepository.findAll();
 
@@ -50,7 +54,11 @@ public class AdminService {
             ProdutoAdminDTO dto = new ProdutoAdminDTO();
             dto.setIdProduto(produto.getId().toString());
             dto.setNome(produto.getNome());
-            dto.setCategoria("Geral"); // Produto não tem categoria ainda, usar valor padrão
+
+            // Buscar categorias do produto
+            List<String> categorias = produtoService.listarCategoriasDoProduto(produto.getId());
+            dto.setCategoria(categorias.isEmpty() ? "Geral" : categorias.get(0));
+
             dto.setPreco(produto.getPreco());
             dto.setUrlImagem(""); // Produto não tem urlImagem ainda, usar vazio
 

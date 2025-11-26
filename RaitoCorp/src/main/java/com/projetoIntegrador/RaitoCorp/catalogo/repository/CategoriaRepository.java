@@ -15,4 +15,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, UUID> {
 
     // Caso queira buscar também por parâmetro boolean
     List<Categoria> findByAtivo(boolean ativo);
+
+    // Buscar categoria por nome
+    java.util.Optional<Categoria> findByNome(String nome);
 }

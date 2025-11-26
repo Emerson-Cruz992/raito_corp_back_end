@@ -10,4 +10,5 @@ import com.projetoIntegrador.RaitoCorp.catalogo.model.ProdutoCategoriaId;
 
 public interface ProdutoCategoriaRepository extends JpaRepository<ProdutoCategoria, ProdutoCategoriaId> {
     List<ProdutoCategoria> findByProdutoId(UUID produtoId);
+    void deleteByProdutoId(UUID produtoId);
 }

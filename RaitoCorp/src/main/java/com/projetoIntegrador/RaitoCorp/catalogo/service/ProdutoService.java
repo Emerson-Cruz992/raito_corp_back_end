@@ -60,7 +60,17 @@ public class ProdutoService {
         return produtoRepository.save(existente);
     }
 
+    @Transactional
     public void excluirProduto(UUID id) {
+        // Verificar se o produto existe
+        if (!produtoRepository.existsById(id)) {
+            throw new RuntimeException("Produto não encontrado");
+        }
+
+        // Remover todas as associações de categorias primeiro
+        produtoCategoriaRepository.deleteByProdutoId(id);
+
+        // Agora excluir o produto (isso deve funcionar porque removemos as dependências)
         produtoRepository.deleteById(id);
     }
 
@@ -76,6 +86,22 @@ public class ProdutoService {
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
 
+        ProdutoCategoria produtoCategoria = new ProdutoCategoria(produto, categoria);
+        produtoCategoriaRepository.save(produtoCategoria);
+    }
+
+    @Transactional
+    public void associarCategoriaPorNome(UUID idProduto, String nomeCategoria) {
+        Produto produto = produtoRepository.findById(idProduto)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        Categoria categoria = categoriaRepository.findByNome(nomeCategoria)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + nomeCategoria));
+
+        // Remover associações antigas de categoria
+        produtoCategoriaRepository.deleteByProdutoId(idProduto);
+
+        // Criar nova associação
         ProdutoCategoria produtoCategoria = new ProdutoCategoria(produto, categoria);
         produtoCategoriaRepository.save(produtoCategoria);
     }

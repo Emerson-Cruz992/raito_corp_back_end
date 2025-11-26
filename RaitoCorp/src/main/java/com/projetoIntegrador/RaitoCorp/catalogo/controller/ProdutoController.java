@@ -77,6 +77,14 @@ public class ProdutoController {
         return ResponseEntity.ok("Categoria associada ao produto com sucesso!");
     }
 
+    @PostMapping("/{idProduto}/categoria-nome/{nomeCategoria}")
+    public ResponseEntity<String> associarCategoriaPorNome(
+            @PathVariable UUID idProduto,
+            @PathVariable String nomeCategoria) {
+        produtoService.associarCategoriaPorNome(idProduto, nomeCategoria);
+        return ResponseEntity.ok("Categoria associada ao produto com sucesso!");
+    }
+
     @GetMapping("/{idProduto}/categorias")
     public ResponseEntity<List<String>> listarCategoriasDoProduto(@PathVariable UUID idProduto) {
         return ResponseEntity.ok(produtoService.listarCategoriasDoProduto(idProduto));
