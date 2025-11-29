@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projetoIntegrador.RaitoCorp.cadastro.dto.LoginRequest;
 import com.projetoIntegrador.RaitoCorp.cadastro.dto.LoginResponse;
 import com.projetoIntegrador.RaitoCorp.cadastro.model.Credencial;
 import com.projetoIntegrador.RaitoCorp.cadastro.model.Usuario;
@@ -38,8 +38,11 @@ public class CredencialController {
 
     // Login
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestParam String email, @RequestParam String senha) {
-        Optional<Credencial> credencialOpt = credencialService.autenticarERetornar(email, senha);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        Optional<Credencial> credencialOpt = credencialService.autenticarERetornar(
+            loginRequest.getEmail(),
+            loginRequest.getSenha()
+        );
 
         if (credencialOpt.isEmpty()) {
             return ResponseEntity.status(401).build();

@@ -1,11 +1,18 @@
 package com.projetoIntegrador.RaitoCorp.catalogo.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Categoria;
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
@@ -19,6 +26,9 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ProdutoService {
+
+    @Value("${upload.directory:uploads/produtos}")
+    private String uploadDirectory;
 
     private final ProdutoRepository produtoRepository;
     private final CategoriaRepository categoriaRepository;
@@ -40,6 +50,12 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
+    public List<Produto> listarProdutosEmDestaque() {
+        return produtoRepository.findAll().stream()
+                .filter(Produto::isEmDestaque)
+                .collect(Collectors.toList());
+    }
+
     public Optional<Produto> buscarPorId(UUID id) {
         return produtoRepository.findById(id);
     }
@@ -57,6 +73,26 @@ public class ProdutoService {
         existente.setDescricao(atualizado.getDescricao());
         existente.setPreco(atualizado.getPreco());
         existente.setAtivo(atualizado.isAtivo());
+        return produtoRepository.save(existente);
+    }
+
+    @Transactional
+    public Produto atualizarParcial(UUID id, Produto atualizacaoParcial) {
+        Produto existente = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        if (atualizacaoParcial.getNome() != null) {
+            existente.setNome(atualizacaoParcial.getNome());
+        }
+        if (atualizacaoParcial.getDescricao() != null) {
+            existente.setDescricao(atualizacaoParcial.getDescricao());
+        }
+        if (atualizacaoParcial.getPreco() != null) {
+            existente.setPreco(atualizacaoParcial.getPreco());
+        }
+        // Atualiza emDestaque se fornecido
+        existente.setEmDestaque(atualizacaoParcial.isEmDestaque());
+
         return produtoRepository.save(existente);
     }
 
@@ -125,5 +161,42 @@ public class ProdutoService {
         produtoCategoriaRepository.deleteById(id);
     }
 
-    
+    // =========================================================
+    // UPLOAD DE IMAGEM
+    // =========================================================
+
+    @Transactional
+    public Produto uploadImagem(UUID idProduto, MultipartFile imagem) {
+        Produto produto = produtoRepository.findById(idProduto)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        try {
+            // Criar diretório se não existir
+            Path uploadPath = Paths.get(uploadDirectory);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Gerar nome único para o arquivo
+            String originalFilename = imagem.getOriginalFilename();
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            String novoNomeArquivo = idProduto + "_" + System.currentTimeMillis() + fileExtension;
+
+            // Salvar arquivo
+            Path filePath = uploadPath.resolve(novoNomeArquivo);
+            Files.copy(imagem.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Atualizar URL da imagem no produto
+            String imagemUrl = "/uploads/produtos/" + novoNomeArquivo;
+            produto.setImagemUrl(imagemUrl);
+
+            return produtoRepository.save(produto);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao fazer upload da imagem: " + e.getMessage());
+        }
+    }
 }

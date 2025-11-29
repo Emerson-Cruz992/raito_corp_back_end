@@ -18,11 +18,17 @@ public class Produto {
 
     private BigDecimal preco;
 
-    private boolean ativo = true;
+    private Boolean ativo = true;
+
+    @Column(name = "em_destaque")
+    private Boolean emDestaque = false;
+
+    @Column(name = "imagem_url")
+    private String imagemUrl;
 
     public Produto() {}
 
-    public Produto(String nome, String descricao, BigDecimal preco, boolean ativo) {
+    public Produto(String nome, String descricao, BigDecimal preco, Boolean ativo) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
@@ -61,11 +67,27 @@ public class Produto {
         this.preco = preco;
     }
 
-    public boolean isAtivo() {
+    public Boolean isAtivo() {
         return ativo;
     }
 
-    public void setAtivo(boolean ativo) {
+    public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Boolean isEmDestaque() {
+        return emDestaque;
+    }
+
+    public void setEmDestaque(Boolean emDestaque) {
+        this.emDestaque = emDestaque;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 }

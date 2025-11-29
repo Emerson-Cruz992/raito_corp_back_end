@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 import com.projetoIntegrador.RaitoCorp.catalogo.service.ProdutoService;
@@ -33,7 +36,10 @@ public class ProdutoController {
     // =========================================================
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listarTodos() {
+    public ResponseEntity<List<Produto>> listarTodos(@RequestParam(required = false) Boolean emDestaque) {
+        if (emDestaque != null && emDestaque) {
+            return ResponseEntity.ok(produtoService.listarProdutosEmDestaque());
+        }
         return ResponseEntity.ok(produtoService.listarTodos());
     }
 
@@ -56,6 +62,14 @@ public class ProdutoController {
             @PathVariable UUID id,
             @RequestBody Produto produto) {
         Produto atualizado = produtoService.atualizarProduto(id, produto);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Produto> atualizarParcial(
+            @PathVariable UUID id,
+            @RequestBody Produto produto) {
+        Produto atualizado = produtoService.atualizarParcial(id, produto);
         return ResponseEntity.ok(atualizado);
     }
 //Não funciona 
@@ -96,5 +110,21 @@ public class ProdutoController {
             @PathVariable UUID idCategoria) {
         produtoService.removerCategoria(idProduto, idCategoria);
         return ResponseEntity.ok("Categoria removida do produto com sucesso!");
+    }
+
+    // =========================================================
+    // UPLOAD DE IMAGEM
+    // =========================================================
+
+    @PostMapping("/{idProduto}/imagem")
+    public ResponseEntity<Produto> uploadImagem(
+            @PathVariable UUID idProduto,
+            @RequestParam("imagem") MultipartFile imagem) {
+        try {
+            Produto produtoAtualizado = produtoService.uploadImagem(idProduto, imagem);
+            return ResponseEntity.ok(produtoAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

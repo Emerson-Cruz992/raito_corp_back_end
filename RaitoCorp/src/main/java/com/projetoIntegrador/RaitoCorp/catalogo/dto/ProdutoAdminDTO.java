@@ -11,6 +11,8 @@ public class ProdutoAdminDTO {
     private Integer vendidos;
     private BigDecimal receita;
     private String urlImagem;
+    private Boolean emDestaque;
+    private String descricao;
 
     public ProdutoAdminDTO() {}
 
@@ -89,5 +91,21 @@ public class ProdutoAdminDTO {
 
     public void setUrlImagem(String urlImagem) {
         this.urlImagem = urlImagem;
+    }
+
+    public Boolean getEmDestaque() {
+        return emDestaque;
+    }
+
+    public void setEmDestaque(Boolean emDestaque) {
+        this.emDestaque = emDestaque;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

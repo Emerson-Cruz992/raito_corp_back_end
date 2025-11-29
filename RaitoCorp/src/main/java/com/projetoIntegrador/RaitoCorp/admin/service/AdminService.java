@@ -60,7 +60,9 @@ public class AdminService {
             dto.setCategoria(categorias.isEmpty() ? "Geral" : categorias.get(0));
 
             dto.setPreco(produto.getPreco());
-            dto.setUrlImagem(""); // Produto não tem urlImagem ainda, usar vazio
+            dto.setUrlImagem(produto.getImagemUrl() != null ? produto.getImagemUrl() : "");
+            dto.setEmDestaque(produto.isEmDestaque() != null ? produto.isEmDestaque() : false);
+            dto.setDescricao(produto.getDescricao());
 
             // Buscar estoque
             Optional<Estoque> estoqueOpt = estoqueRepository.findByIdProduto(produto.getId());
