@@ -1,5 +1,7 @@
 package com.projetoIntegrador.RaitoCorp.vendas.controller;
 
+import com.projetoIntegrador.RaitoCorp.vendas.dto.AdicionarItemCarrinhoDTO;
+import com.projetoIntegrador.RaitoCorp.vendas.dto.CriarCarrinhoDTO;
 import com.projetoIntegrador.RaitoCorp.vendas.model.*;
 import com.projetoIntegrador.RaitoCorp.vendas.service.CarrinhoService;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,15 @@ public class CarrinhoController {
     }
 
     @PostMapping("/criar")
-    public ResponseEntity<Carrinho> criarCarrinho(@RequestParam UUID idCliente) {
-        return ResponseEntity.ok(carrinhoService.obterOuCriarCarrinho(idCliente));
+    public ResponseEntity<?> criarCarrinho(@RequestBody CriarCarrinhoDTO dto) {
+        try {
+            UUID clienteUUID = UUID.fromString(dto.getIdCliente());
+            return ResponseEntity.ok(carrinhoService.obterOuCriarCarrinho(clienteUUID));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("ID do cliente inválido: " + dto.getIdCliente());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao criar carrinho: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{idCarrinho}/itens")
@@ -30,13 +39,18 @@ public class CarrinhoController {
     }
 
     @PostMapping("/{idCarrinho}/adicionar")
-    public ResponseEntity<ItemCarrinho> adicionarItem(
+    public ResponseEntity<?> adicionarItem(
             @PathVariable UUID idCarrinho,
-            @RequestParam UUID idProduto,
-            @RequestParam Integer quantidade,
-            @RequestParam BigDecimal preco
+            @RequestBody AdicionarItemCarrinhoDTO dto
     ) {
-        return ResponseEntity.ok(carrinhoService.adicionarItem(idCarrinho, idProduto, quantidade, preco));
+        try {
+            UUID produtoUUID = UUID.fromString(dto.getIdProduto());
+            return ResponseEntity.ok(carrinhoService.adicionarItem(idCarrinho, produtoUUID, dto.getQuantidade(), dto.getPreco()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("ID do produto inválido: " + dto.getIdProduto());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao adicionar item: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{idCarrinho}/remover/{idProduto}")

@@ -16,25 +16,25 @@ public class Endereco {
     @Column(name = "id_cliente", nullable = false)
     private UUID idCliente;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 9)
     private String cep;
 
     @Column(nullable = false, length = 255)
     private String rua;
 
-    @Column(length = 10)
+    @Column(nullable = false, length = 10)
     private String numero;
 
     @Column(length = 255)
     private String complemento;
 
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String bairro;
 
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String cidade;
 
-    @Column(length = 2)
+    @Column(nullable = false, length = 2)
     private String estado;
 
     @Column(name = "tipo_endereco", length = 50)

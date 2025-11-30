@@ -28,6 +28,10 @@ public class PedidoService {
         this.estoqueService = estoqueService;
     }
 
+    public List<Pedido> listarTodos() {
+        return pedidoRepository.findAll();
+    }
+
     public List<Pedido> listarPorCliente(UUID idCliente) {
         return pedidoRepository.findByIdCliente(idCliente);
     }

@@ -18,6 +18,11 @@ public class PedidoController {
         this.pedidoService = pedidoService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Pedido>> listarTodos() {
+        return ResponseEntity.ok(pedidoService.listarTodos());
+    }
+
     @GetMapping("/cliente/{idCliente}")
     public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable UUID idCliente) {
         return ResponseEntity.ok(pedidoService.listarPorCliente(idCliente));
