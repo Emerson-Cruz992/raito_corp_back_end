@@ -23,7 +23,8 @@ public class Produto {
     @Column(name = "em_destaque")
     private Boolean emDestaque = false;
 
-    @Column(name = "imagem_url")
+    @Lob
+    @Column(name = "imagem_url", columnDefinition = "TEXT")
     private String imagemUrl;
 
     public Produto() {}

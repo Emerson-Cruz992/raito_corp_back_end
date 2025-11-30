@@ -92,11 +92,13 @@ public class ProdutoController {
     }
 
     @PostMapping("/{idProduto}/categoria-nome/{nomeCategoria}")
-    public ResponseEntity<String> associarCategoriaPorNome(
+    public ResponseEntity<Produto> associarCategoriaPorNome(
             @PathVariable UUID idProduto,
             @PathVariable String nomeCategoria) {
         produtoService.associarCategoriaPorNome(idProduto, nomeCategoria);
-        return ResponseEntity.ok("Categoria associada ao produto com sucesso!");
+        Produto produto = produtoService.buscarPorId(idProduto)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        return ResponseEntity.ok(produto);
     }
 
     @GetMapping("/{idProduto}/categorias")
@@ -121,9 +123,14 @@ public class ProdutoController {
             @PathVariable UUID idProduto,
             @RequestParam("imagem") MultipartFile imagem) {
         try {
+            System.out.println("Recebendo upload de imagem para produto: " + idProduto);
+            System.out.println("Nome do arquivo: " + imagem.getOriginalFilename());
+            System.out.println("Tamanho do arquivo: " + imagem.getSize());
             Produto produtoAtualizado = produtoService.uploadImagem(idProduto, imagem);
             return ResponseEntity.ok(produtoAtualizado);
         } catch (Exception e) {
+            System.err.println("Erro ao fazer upload de imagem: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

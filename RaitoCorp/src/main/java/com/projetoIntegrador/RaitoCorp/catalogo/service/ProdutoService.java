@@ -1,10 +1,7 @@
 package com.projetoIntegrador.RaitoCorp.catalogo.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,9 +23,6 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ProdutoService {
-
-    @Value("${upload.directory:uploads/produtos}")
-    private String uploadDirectory;
 
     private final ProdutoRepository produtoRepository;
     private final CategoriaRepository categoriaRepository;
@@ -171,32 +165,37 @@ public class ProdutoService {
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
         try {
-            // Criar diretório se não existir
-            Path uploadPath = Paths.get(uploadDirectory);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            System.out.println("Recebendo upload de imagem para produto: " + idProduto);
+            System.out.println("Nome do arquivo: " + imagem.getOriginalFilename());
+            System.out.println("Tamanho do arquivo: " + imagem.getSize() + " bytes");
+
+            // Converter imagem para Base64
+            byte[] imageBytes = imagem.getBytes();
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+
+            // Determinar o tipo MIME da imagem
+            String contentType = imagem.getContentType();
+            if (contentType == null || contentType.isEmpty()) {
+                contentType = "image/jpeg"; // fallback padrão
             }
 
-            // Gerar nome único para o arquivo
-            String originalFilename = imagem.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            String novoNomeArquivo = idProduto + "_" + System.currentTimeMillis() + fileExtension;
+            // Criar data URI com formato: data:image/jpeg;base64,/9j/4AAQ...
+            String dataUri = "data:" + contentType + ";base64," + base64Image;
 
-            // Salvar arquivo
-            Path filePath = uploadPath.resolve(novoNomeArquivo);
-            Files.copy(imagem.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Imagem convertida para base64 com sucesso");
+            System.out.println("Tipo MIME: " + contentType);
+            System.out.println("Tamanho do base64: " + dataUri.length() + " caracteres");
 
-            // Atualizar URL da imagem no produto
-            String imagemUrl = "/uploads/produtos/" + novoNomeArquivo;
-            produto.setImagemUrl(imagemUrl);
+            // Salvar data URI no banco de dados
+            produto.setImagemUrl(dataUri);
 
             return produtoRepository.save(produto);
 
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao fazer upload da imagem: " + e.getMessage());
+            System.err.println("Erro ao converter imagem para base64:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao fazer upload da imagem: " + e.getMessage(), e);
         }
     }
 }
