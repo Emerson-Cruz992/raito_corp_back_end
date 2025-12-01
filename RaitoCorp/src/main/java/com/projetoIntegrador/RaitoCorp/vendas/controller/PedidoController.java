@@ -1,5 +1,6 @@
 package com.projetoIntegrador.RaitoCorp.vendas.controller;
 
+import com.projetoIntegrador.RaitoCorp.vendas.dto.AtualizarStatusPedidoDTO;
 import com.projetoIntegrador.RaitoCorp.vendas.model.Pedido;
 import com.projetoIntegrador.RaitoCorp.vendas.service.PedidoService;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +48,8 @@ public class PedidoController {
     @PutMapping("/{idPedido}/status")
     public ResponseEntity<Pedido> atualizarStatus(
             @PathVariable UUID idPedido,
-            @RequestParam String status
+            @RequestBody AtualizarStatusPedidoDTO dto
     ) {
-        return ResponseEntity.ok(pedidoService.atualizarStatus(idPedido, status));
+        return ResponseEntity.ok(pedidoService.atualizarStatus(idPedido, dto.getStatus()));
     }
 }

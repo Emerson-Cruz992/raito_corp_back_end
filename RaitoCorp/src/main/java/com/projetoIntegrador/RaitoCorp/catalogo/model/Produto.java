@@ -23,6 +23,15 @@ public class Produto {
     @Column(name = "em_destaque")
     private Boolean emDestaque = false;
 
+    @Column(name = "is_novidade")
+    private Boolean isNovidade = false;
+
+    @Column(name = "is_promocao")
+    private Boolean isPromocao = false;
+
+    @Column(name = "preco_original")
+    private BigDecimal precoOriginal;
+
     @Lob
     @Column(name = "imagem_url", columnDefinition = "TEXT")
     private String imagemUrl;
@@ -90,5 +99,29 @@ public class Produto {
 
     public void setImagemUrl(String imagemUrl) {
         this.imagemUrl = imagemUrl;
+    }
+
+    public Boolean isNovidade() {
+        return isNovidade;
+    }
+
+    public void setNovidade(Boolean novidade) {
+        isNovidade = novidade;
+    }
+
+    public Boolean isPromocao() {
+        return isPromocao;
+    }
+
+    public void setPromocao(Boolean promocao) {
+        isPromocao = promocao;
+    }
+
+    public BigDecimal getPrecoOriginal() {
+        return precoOriginal;
+    }
+
+    public void setPrecoOriginal(BigDecimal precoOriginal) {
+        this.precoOriginal = precoOriginal;
     }
 }

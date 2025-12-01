@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.projetoIntegrador.RaitoCorp.catalogo.dto.ProdutoComEstoqueDTO;
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 import com.projetoIntegrador.RaitoCorp.catalogo.service.ProdutoService;
 
@@ -43,9 +44,29 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.listarTodos());
     }
 
+    /**
+     * Lista produtos com informação de estoque
+     * GET /api/produtos/com-estoque
+     */
+    @GetMapping("/com-estoque")
+    public ResponseEntity<List<ProdutoComEstoqueDTO>> listarTodosComEstoque() {
+        return ResponseEntity.ok(produtoService.listarTodosComEstoque());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarPorId(@PathVariable UUID id) {
         return produtoService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Busca produto por ID com informação de estoque
+     * GET /api/produtos/{id}/com-estoque
+     */
+    @GetMapping("/{id}/com-estoque")
+    public ResponseEntity<ProdutoComEstoqueDTO> buscarPorIdComEstoque(@PathVariable UUID id) {
+        return produtoService.buscarPorIdComEstoque(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

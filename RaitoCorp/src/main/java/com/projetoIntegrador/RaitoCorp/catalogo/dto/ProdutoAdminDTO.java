@@ -13,6 +13,9 @@ public class ProdutoAdminDTO {
     private String urlImagem;
     private Boolean emDestaque;
     private String descricao;
+    private Boolean isNovidade;
+    private Boolean isPromocao;
+    private BigDecimal precoOriginal;
 
     public ProdutoAdminDTO() {}
 
@@ -107,5 +110,29 @@ public class ProdutoAdminDTO {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Boolean getIsNovidade() {
+        return isNovidade;
+    }
+
+    public void setIsNovidade(Boolean isNovidade) {
+        this.isNovidade = isNovidade;
+    }
+
+    public Boolean getIsPromocao() {
+        return isPromocao;
+    }
+
+    public void setIsPromocao(Boolean isPromocao) {
+        this.isPromocao = isPromocao;
+    }
+
+    public BigDecimal getPrecoOriginal() {
+        return precoOriginal;
+    }
+
+    public void setPrecoOriginal(BigDecimal precoOriginal) {
+        this.precoOriginal = precoOriginal;
     }
 }

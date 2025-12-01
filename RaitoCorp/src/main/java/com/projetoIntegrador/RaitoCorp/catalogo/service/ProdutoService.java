@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.projetoIntegrador.RaitoCorp.catalogo.dto.ProdutoComEstoqueDTO;
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Categoria;
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 import com.projetoIntegrador.RaitoCorp.catalogo.model.ProdutoCategoria;
@@ -18,6 +19,8 @@ import com.projetoIntegrador.RaitoCorp.catalogo.model.ProdutoCategoriaId;
 import com.projetoIntegrador.RaitoCorp.catalogo.repository.CategoriaRepository;
 import com.projetoIntegrador.RaitoCorp.catalogo.repository.ProdutoCategoriaRepository;
 import com.projetoIntegrador.RaitoCorp.catalogo.repository.ProdutoRepository;
+import com.projetoIntegrador.RaitoCorp.estoque.model.Estoque;
+import com.projetoIntegrador.RaitoCorp.estoque.repository.EstoqueRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -27,13 +30,16 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
     private final CategoriaRepository categoriaRepository;
     private final ProdutoCategoriaRepository produtoCategoriaRepository;
+    private final EstoqueRepository estoqueRepository;
 
     public ProdutoService(ProdutoRepository produtoRepository,
                           CategoriaRepository categoriaRepository,
-                          ProdutoCategoriaRepository produtoCategoriaRepository) {
+                          ProdutoCategoriaRepository produtoCategoriaRepository,
+                          EstoqueRepository estoqueRepository) {
         this.produtoRepository = produtoRepository;
         this.categoriaRepository = categoriaRepository;
         this.produtoCategoriaRepository = produtoCategoriaRepository;
+        this.estoqueRepository = estoqueRepository;
     }
 
     // =========================================================
@@ -48,6 +54,34 @@ public class ProdutoService {
         return produtoRepository.findAll().stream()
                 .filter(Produto::isEmDestaque)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Lista todos os produtos com informação de estoque
+     */
+    public List<ProdutoComEstoqueDTO> listarTodosComEstoque() {
+        List<Produto> produtos = produtoRepository.findAll();
+        return produtos.stream()
+                .map(produto -> {
+                    Integer quantidade = estoqueRepository.findByIdProduto(produto.getId())
+                            .map(Estoque::getQuantidade)
+                            .orElse(0);
+                    return new ProdutoComEstoqueDTO(produto, quantidade);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Busca produto por ID com informação de estoque
+     */
+    public Optional<ProdutoComEstoqueDTO> buscarPorIdComEstoque(UUID id) {
+        return produtoRepository.findById(id)
+                .map(produto -> {
+                    Integer quantidade = estoqueRepository.findByIdProduto(produto.getId())
+                            .map(Estoque::getQuantidade)
+                            .orElse(0);
+                    return new ProdutoComEstoqueDTO(produto, quantidade);
+                });
     }
 
     public Optional<Produto> buscarPorId(UUID id) {
@@ -67,6 +101,10 @@ public class ProdutoService {
         existente.setDescricao(atualizado.getDescricao());
         existente.setPreco(atualizado.getPreco());
         existente.setAtivo(atualizado.isAtivo());
+        existente.setPrecoOriginal(atualizado.getPrecoOriginal());
+        existente.setEmDestaque(atualizado.isEmDestaque());
+        existente.setNovidade(atualizado.isNovidade());
+        existente.setPromocao(atualizado.isPromocao());
         return produtoRepository.save(existente);
     }
 
@@ -84,8 +122,19 @@ public class ProdutoService {
         if (atualizacaoParcial.getPreco() != null) {
             existente.setPreco(atualizacaoParcial.getPreco());
         }
-        // Atualiza emDestaque se fornecido
-        existente.setEmDestaque(atualizacaoParcial.isEmDestaque());
+        if (atualizacaoParcial.getPrecoOriginal() != null) {
+            existente.setPrecoOriginal(atualizacaoParcial.getPrecoOriginal());
+        }
+        // Atualiza flags booleanas
+        if (atualizacaoParcial.isEmDestaque() != null) {
+            existente.setEmDestaque(atualizacaoParcial.isEmDestaque());
+        }
+        if (atualizacaoParcial.isNovidade() != null) {
+            existente.setNovidade(atualizacaoParcial.isNovidade());
+        }
+        if (atualizacaoParcial.isPromocao() != null) {
+            existente.setPromocao(atualizacaoParcial.isPromocao());
+        }
 
         return produtoRepository.save(existente);
     }

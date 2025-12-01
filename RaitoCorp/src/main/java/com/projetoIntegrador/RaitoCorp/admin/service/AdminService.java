@@ -60,8 +60,11 @@ public class AdminService {
             dto.setCategoria(categorias.isEmpty() ? "Geral" : categorias.get(0));
 
             dto.setPreco(produto.getPreco());
+            dto.setPrecoOriginal(produto.getPrecoOriginal() != null ? produto.getPrecoOriginal() : BigDecimal.ZERO);
             dto.setUrlImagem(produto.getImagemUrl() != null ? produto.getImagemUrl() : "");
             dto.setEmDestaque(produto.isEmDestaque() != null ? produto.isEmDestaque() : false);
+            dto.setIsNovidade(produto.isNovidade() != null ? produto.isNovidade() : false);
+            dto.setIsPromocao(produto.isPromocao() != null ? produto.isPromocao() : false);
             dto.setDescricao(produto.getDescricao());
 
             // Buscar estoque

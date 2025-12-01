@@ -2,6 +2,8 @@ package com.projetoIntegrador.RaitoCorp.vendas.service;
 
 import com.projetoIntegrador.RaitoCorp.vendas.model.*;
 import com.projetoIntegrador.RaitoCorp.vendas.repository.*;
+import com.projetoIntegrador.RaitoCorp.estoque.model.Estoque;
+import com.projetoIntegrador.RaitoCorp.estoque.repository.EstoqueRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +15,12 @@ public class CarrinhoService {
 
     private final CarrinhoRepository carrinhoRepository;
     private final ItemCarrinhoRepository itemCarrinhoRepository;
+    private final EstoqueRepository estoqueRepository;
 
-    public CarrinhoService(CarrinhoRepository carrinhoRepository, ItemCarrinhoRepository itemCarrinhoRepository) {
+    public CarrinhoService(CarrinhoRepository carrinhoRepository, ItemCarrinhoRepository itemCarrinhoRepository, EstoqueRepository estoqueRepository) {
         this.carrinhoRepository = carrinhoRepository;
         this.itemCarrinhoRepository = itemCarrinhoRepository;
+        this.estoqueRepository = estoqueRepository;
     }
 
     // Criar ou buscar carrinho existente
@@ -35,6 +39,11 @@ public class CarrinhoService {
 
     @Transactional
     public ItemCarrinho adicionarItem(UUID idCarrinho, UUID idProduto, Integer quantidade, BigDecimal preco) {
+        // Validar estoque disponível
+        Integer estoqueDisponivel = estoqueRepository.findByIdProduto(idProduto)
+                .map(estoque -> estoque.getQuantidade())
+                .orElse(0);
+
         ItemCarrinho.PK pk = new ItemCarrinho.PK(idCarrinho, idProduto);
 
         ItemCarrinho item = itemCarrinhoRepository.findById(pk)
@@ -47,7 +56,13 @@ public class CarrinhoService {
                     return novo;
                 });
 
-        item.setQuantidade(item.getQuantidade() + quantidade);
+        // Verificar se a quantidade solicitada excede o estoque
+        Integer novaQuantidade = item.getQuantidade() + quantidade;
+        if (novaQuantidade > estoqueDisponivel) {
+            throw new RuntimeException("Estoque insuficiente. Disponível: " + estoqueDisponivel + " unidades. Você já tem " + item.getQuantidade() + " no carrinho.");
+        }
+
+        item.setQuantidade(novaQuantidade);
         item.setPrecoUnitario(preco);
 
         return itemCarrinhoRepository.save(item);
