@@ -1,5 +1,6 @@
 package com.projetoIntegrador.RaitoCorp.catalogo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -23,11 +24,13 @@ public class Produto {
     @Column(name = "em_destaque")
     private Boolean emDestaque = false;
 
+    @JsonProperty("isNovidade")
     @Column(name = "is_novidade")
-    private Boolean isNovidade = false;
+    private Boolean novidade = false;
 
+    @JsonProperty("isPromocao")
     @Column(name = "is_promocao")
-    private Boolean isPromocao = false;
+    private Boolean promocao = false;
 
     @Column(name = "preco_original")
     private BigDecimal precoOriginal;
@@ -102,19 +105,19 @@ public class Produto {
     }
 
     public Boolean isNovidade() {
-        return isNovidade;
+        return novidade;
     }
 
     public void setNovidade(Boolean novidade) {
-        isNovidade = novidade;
+        this.novidade = novidade;
     }
 
     public Boolean isPromocao() {
-        return isPromocao;
+        return promocao;
     }
 
     public void setPromocao(Boolean promocao) {
-        isPromocao = promocao;
+        this.promocao = promocao;
     }
 
     public BigDecimal getPrecoOriginal() {

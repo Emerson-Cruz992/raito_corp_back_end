@@ -38,6 +38,9 @@ public class PedidoService {
 
     @Transactional
     public Pedido finalizarPedido(UUID idCliente, UUID idCarrinho, UUID idEnderecoEntrega) {
+        System.out.println("=== FINALIZANDO PEDIDO ===");
+        System.out.println("Cliente: " + idCliente + ", Carrinho: " + idCarrinho);
+
         BigDecimal total = carrinhoService.calcularTotal(idCarrinho);
         Pedido pedido = new Pedido();
         pedido.setIdCliente(idCliente);
@@ -48,7 +51,11 @@ public class PedidoService {
 
         // Itens do carrinho
         List<ItemCarrinho> itensCarrinho = carrinhoService.listarItens(idCarrinho);
+        System.out.println("Total de itens no carrinho: " + itensCarrinho.size());
+
         for (ItemCarrinho item : itensCarrinho) {
+            System.out.println("Processando item - Produto: " + item.getIdProduto() + ", Quantidade: " + item.getQuantidade() + ", Preço: " + item.getPrecoUnitario());
+
             ItemPedido novo = new ItemPedido();
             novo.setIdPedido(pedido.getIdPedido());
             novo.setIdProduto(item.getIdProduto());
@@ -57,6 +64,7 @@ public class PedidoService {
             itemPedidoRepository.save(novo);
 
             // Dá baixa no estoque
+            System.out.println("Dando baixa no estoque - Produto: " + item.getIdProduto() + ", Quantidade: " + item.getQuantidade());
             estoqueService.movimentarSaida(item.getIdProduto(), item.getQuantidade());
         }
 

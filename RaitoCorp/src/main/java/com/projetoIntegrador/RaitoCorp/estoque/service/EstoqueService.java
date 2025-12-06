@@ -57,8 +57,9 @@ public class EstoqueService {
     @Transactional
     public Estoque movimentarSaida(UUID idProduto, int qtdVendida) {
         Estoque estoque = buscarPorProduto(idProduto);
-        if (estoque.getQuantidade() < qtdVendida)
-            throw new RuntimeException("Estoque insuficiente para saída.");
+        int disponivel = estoque.getQuantidade() - estoque.getReservado();
+        if (disponivel < qtdVendida)
+            throw new RuntimeException("Estoque insuficiente para saída. Disponível: " + disponivel + ", solicitado: " + qtdVendida);
 
         estoque.setQuantidade(estoque.getQuantidade() - qtdVendida);
         estoque.setReservado(Math.max(estoque.getReservado() - qtdVendida, 0));

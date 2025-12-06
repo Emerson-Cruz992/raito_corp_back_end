@@ -2,7 +2,9 @@ package com.projetoIntegrador.RaitoCorp.catalogo.dto;
 
 import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ProdutoComEstoqueDTO {
     private UUID id;
@@ -16,6 +18,7 @@ public class ProdutoComEstoqueDTO {
     private BigDecimal precoOriginal;
     private String imagemUrl;
     private Integer quantidadeEstoque;
+    private List<String> categorias;
 
     public ProdutoComEstoqueDTO() {}
 
@@ -31,6 +34,11 @@ public class ProdutoComEstoqueDTO {
         this.precoOriginal = produto.getPrecoOriginal();
         this.imagemUrl = produto.getImagemUrl();
         this.quantidadeEstoque = quantidadeEstoque;
+        this.categorias = produto.getCategorias() != null
+            ? produto.getCategorias().stream()
+                .map(c -> c.getNome())
+                .collect(Collectors.toList())
+            : List.of();
     }
 
     // Getters and Setters
@@ -121,5 +129,13 @@ public class ProdutoComEstoqueDTO {
 
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public List<String> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(List<String> categorias) {
+        this.categorias = categorias;
     }
 }

@@ -3,6 +3,7 @@ package com.projetoIntegrador.RaitoCorp.cadastro.controller;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.projetoIntegrador.RaitoCorp.cadastro.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/credenciais")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CredencialController {
 
     private final CredencialService credencialService;

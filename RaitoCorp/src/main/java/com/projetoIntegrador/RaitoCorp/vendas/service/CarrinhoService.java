@@ -39,6 +39,9 @@ public class CarrinhoService {
 
     @Transactional
     public ItemCarrinho adicionarItem(UUID idCarrinho, UUID idProduto, Integer quantidade, BigDecimal preco) {
+        System.out.println("=== ADICIONAR ITEM AO CARRINHO (BACKEND) ===");
+        System.out.println("Carrinho: " + idCarrinho + ", Produto: " + idProduto + ", Quantidade recebida: " + quantidade);
+
         // Validar estoque disponível
         Integer estoqueDisponivel = estoqueRepository.findByIdProduto(idProduto)
                 .map(estoque -> estoque.getQuantidade())
@@ -56,8 +59,12 @@ public class CarrinhoService {
                     return novo;
                 });
 
+        System.out.println("Quantidade atual no carrinho: " + item.getQuantidade());
+
         // Verificar se a quantidade solicitada excede o estoque
         Integer novaQuantidade = item.getQuantidade() + quantidade;
+        System.out.println("Nova quantidade (atual + recebida): " + novaQuantidade);
+
         if (novaQuantidade > estoqueDisponivel) {
             throw new RuntimeException("Estoque insuficiente. Disponível: " + estoqueDisponivel + " unidades. Você já tem " + item.getQuantidade() + " no carrinho.");
         }

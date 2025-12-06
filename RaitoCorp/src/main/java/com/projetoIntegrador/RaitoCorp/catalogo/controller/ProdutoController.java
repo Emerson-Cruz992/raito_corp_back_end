@@ -82,15 +82,48 @@ public class ProdutoController {
     public ResponseEntity<Produto> atualizarProduto(
             @PathVariable UUID id,
             @RequestBody Produto produto) {
+        System.out.println("=== PRODUTO RECEBIDO NO CONTROLLER ===");
+        System.out.println("Nome: " + produto.getNome());
+        System.out.println("emDestaque: " + produto.isEmDestaque());
+        System.out.println("isNovidade: " + produto.isNovidade());
+        System.out.println("isPromocao: " + produto.isPromocao());
+        System.out.println("precoOriginal: " + produto.getPrecoOriginal());
         Produto atualizado = produtoService.atualizarProduto(id, produto);
+        System.out.println("=== PRODUTO APÓS ATUALIZAÇÃO ===");
+        System.out.println("emDestaque: " + atualizado.isEmDestaque());
+        System.out.println("isNovidade: " + atualizado.isNovidade());
+        System.out.println("isPromocao: " + atualizado.isPromocao());
         return ResponseEntity.ok(atualizado);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Produto> atualizarParcial(
             @PathVariable UUID id,
-            @RequestBody Produto produto) {
+            @RequestBody String jsonRaw) {
+        System.out.println("=== RAW JSON RECEBIDO ===");
+        System.out.println(jsonRaw);
+
+        // Desserializar manualmente para debug
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        Produto produto;
+        try {
+            produto = mapper.readValue(jsonRaw, Produto.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+
+        System.out.println("=== PATCH - PRODUTO RECEBIDO NO CONTROLLER ===");
+        System.out.println("Nome: " + produto.getNome());
+        System.out.println("emDestaque: " + produto.isEmDestaque());
+        System.out.println("isNovidade: " + produto.isNovidade());
+        System.out.println("isPromocao: " + produto.isPromocao());
+        System.out.println("precoOriginal: " + produto.getPrecoOriginal());
         Produto atualizado = produtoService.atualizarParcial(id, produto);
+        System.out.println("=== PATCH - PRODUTO APÓS ATUALIZAÇÃO ===");
+        System.out.println("emDestaque: " + atualizado.isEmDestaque());
+        System.out.println("isNovidade: " + atualizado.isNovidade());
+        System.out.println("isPromocao: " + atualizado.isPromocao());
         return ResponseEntity.ok(atualizado);
     }
 //Não funciona 
