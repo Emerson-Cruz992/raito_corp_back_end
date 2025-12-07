@@ -1,10 +1,11 @@
 package com.projetoIntegrador.RaitoCorp.catalogo.dto;
 
-import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.projetoIntegrador.RaitoCorp.catalogo.model.Produto;
 
 public class ProdutoComEstoqueDTO {
     private UUID id;

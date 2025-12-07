@@ -1,9 +1,24 @@
 package com.projetoIntegrador.RaitoCorp.catalogo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "produtos")
@@ -38,6 +53,14 @@ public class Produto {
     @Lob
     @Column(name = "imagem_url", columnDefinition = "TEXT")
     private String imagemUrl;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "produtos_categorias",
+        joinColumns = @JoinColumn(name = "produto_id"),
+        inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private Set<Categoria> categorias = new HashSet<>();
 
     public Produto() {}
 
@@ -126,5 +149,13 @@ public class Produto {
 
     public void setPrecoOriginal(BigDecimal precoOriginal) {
         this.precoOriginal = precoOriginal;
+    }
+
+    public Set<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(Set<Categoria> categorias) {
+        this.categorias = categorias;
     }
 }
