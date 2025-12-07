@@ -174,8 +174,15 @@ public class ProdutoService {
         Produto produto = produtoRepository.findById(idProduto)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
+        // Buscar categoria ou criar se não existir
         Categoria categoria = categoriaRepository.findByNome(nomeCategoria)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + nomeCategoria));
+                .orElseGet(() -> {
+                    Categoria novaCategoria = new Categoria();
+                    novaCategoria.setNome(nomeCategoria);
+                    novaCategoria.setDescricao("Categoria " + nomeCategoria);
+                    novaCategoria.setAtivo(true);
+                    return categoriaRepository.save(novaCategoria);
+                });
 
         // Remover associações antigas de categoria
         produtoCategoriaRepository.deleteByProdutoId(idProduto);
