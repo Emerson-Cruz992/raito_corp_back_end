@@ -29,7 +29,14 @@ public class EstoqueService {
 
     @Transactional
     public Estoque atualizarQuantidade(UUID idProduto, int novaQuantidade) {
-        Estoque estoque = buscarPorProduto(idProduto);
+        // Upsert: cria se não existe, atualiza se existe
+        Estoque estoque = estoqueRepository.findByIdProduto(idProduto)
+                .orElseGet(() -> {
+                    Estoque novo = new Estoque();
+                    novo.setIdProduto(idProduto);
+                    novo.setReservado(0);
+                    return novo;
+                });
         estoque.setQuantidade(novaQuantidade);
         estoque.setAtualizadoEm(LocalDateTime.now());
         return estoqueRepository.save(estoque);
@@ -69,11 +76,16 @@ public class EstoqueService {
 
     @Transactional
     public Estoque adicionarProduto(UUID idProduto, int qtdInicial) {
-        Estoque novo = new Estoque();
-        novo.setIdProduto(idProduto);
-        novo.setQuantidade(qtdInicial);
-        novo.setReservado(0);
-        novo.setAtualizadoEm(LocalDateTime.now());
-        return estoqueRepository.save(novo);
+        // Upsert: cria se não existe, atualiza se existe
+        Estoque estoque = estoqueRepository.findByIdProduto(idProduto)
+                .orElseGet(() -> {
+                    Estoque novo = new Estoque();
+                    novo.setIdProduto(idProduto);
+                    novo.setReservado(0);
+                    return novo;
+                });
+        estoque.setQuantidade(qtdInicial);
+        estoque.setAtualizadoEm(LocalDateTime.now());
+        return estoqueRepository.save(estoque);
     }
 }
