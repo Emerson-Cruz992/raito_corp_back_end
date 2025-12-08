@@ -46,10 +46,12 @@ class CredencialServiceTest {
         Credencial credencial = new Credencial(UUID.randomUUID(), "user@email.com", senhaHash);
 
         when(credencialRepository.findByEmail("user@email.com")).thenReturn(Optional.of(credencial));
+        when(credencialRepository.save(any(Credencial.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        boolean resultado = credencialService.autenticar("user@email.com", "senha123");
+        Optional<Credencial> resultado = credencialService.autenticarERetornar("user@email.com", "senha123");
 
-        assertTrue(resultado);
+        assertTrue(resultado.isPresent());
+        assertEquals("user@email.com", resultado.get().getEmail());
     }
 
     @Test
@@ -58,18 +60,19 @@ class CredencialServiceTest {
         Credencial credencial = new Credencial(UUID.randomUUID(), "user@email.com", senhaHash);
 
         when(credencialRepository.findByEmail("user@email.com")).thenReturn(Optional.of(credencial));
+        when(credencialRepository.save(any(Credencial.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        boolean resultado = credencialService.autenticar("user@email.com", "errada");
+        Optional<Credencial> resultado = credencialService.autenticarERetornar("user@email.com", "errada");
 
-        assertFalse(resultado);
+        assertTrue(resultado.isEmpty());
     }
 
     @Test
     void deveRecusarEmailInexistente() {
         when(credencialRepository.findByEmail("naoexiste@email.com")).thenReturn(Optional.empty());
 
-        boolean resultado = credencialService.autenticar("naoexiste@email.com", "qualquer");
+        Optional<Credencial> resultado = credencialService.autenticarERetornar("naoexiste@email.com", "qualquer");
 
-        assertFalse(resultado);
+        assertTrue(resultado.isEmpty());
     }
 }

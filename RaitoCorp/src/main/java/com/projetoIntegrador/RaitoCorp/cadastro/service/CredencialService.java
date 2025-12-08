@@ -1,7 +1,6 @@
 package com.projetoIntegrador.RaitoCorp.cadastro.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,25 +23,6 @@ public class CredencialService {
         String senhaCriptografada = encoder.encode(credencial.getSenhaHash());
         credencial.setSenhaHash(senhaCriptografada);
         return credencialRepo.save(credencial);
-    }
-
-    public boolean autenticar(String email, String senha) {
-        Optional<Credencial> credencialOpt = credencialRepo.findByEmail(email);
-        if (credencialOpt.isEmpty()) return false;
-
-        Credencial credencial = credencialOpt.get();
-        boolean senhaOk = encoder.matches(senha, credencial.getSenhaHash());
-
-        if (senhaOk) {
-            credencial.setUltimoLogin(LocalDateTime.now());
-            credencial.setTentativasLogin(0);
-            credencialRepo.save(credencial);
-            return true;
-        } else {
-            credencial.setTentativasLogin(credencial.getTentativasLogin() + 1);
-            credencialRepo.save(credencial);
-            return false;
-        }
     }
 
     public Optional<Credencial> autenticarERetornar(String email, String senha) {
@@ -70,9 +50,5 @@ public class CredencialService {
 
     public Optional<Credencial> buscarPorIdUsuario(java.util.UUID idUsuario) {
         return credencialRepo.findByIdUsuario(idUsuario);
-    }
-
-    public List<Credencial> listarcCredenciais() {
-        return credencialRepo.findAll();
     }
 }

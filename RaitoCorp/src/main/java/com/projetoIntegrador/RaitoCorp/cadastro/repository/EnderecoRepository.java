@@ -11,5 +11,4 @@ import com.projetoIntegrador.RaitoCorp.cadastro.model.Endereco;
 @Repository
 public interface EnderecoRepository extends JpaRepository<Endereco, UUID> {
     List<Endereco> findByIdCliente(UUID idCliente);
-    List<Endereco> findByEnderecoPrincipalTrue();
 }
